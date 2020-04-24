@@ -1,25 +1,23 @@
 const {db, User, AnimalCrossingAccount} = require ('../models') 
+const { MessageEmbed } = require("discord.js")
 
-module.exports = message => {
+module.exports = async message => {
   // check if there is an user who is mentioned
-  // console.log(message.author)
+  let user
   const member = message.mentions.members.first()
   if (member!==undefined) {
-    const user = User.find(member.id)
-    if (user!==null && user.animalCrossingAccount!==null) {
-      return message.reply("J'ai trouvé l'utilisateur : "+user.username)
-    } else {
+    user = await User.findByPk(member.id, { include: AnimalCrossingAccount })
+    if (user==undefined || user.AnimalCrossingAccount==undefined) {
       return message.reply("L'utilisateur n'a pas défini son profil.")
     }
   } else {
     // else it has to be the definition of parametters
-
     const userParams = {
       id: message.author.id,
       username: message.author.username,
       discriminator: message.author.discriminator,
       avatar: message.author.avatar,
-      animalCrossingAccount : {
+      AnimalCrossingAccount : {
         name: null,
         island: null,
         title: null,
@@ -31,11 +29,10 @@ module.exports = message => {
     }
 
     let search
-
     // Name
     search = /nom="(?<name>[^"]+)"/.exec(message.content)
     if (search!==null && search.groups.name!==undefined) {
-      userParams.animalCrossingAccount.name = search.groups.name
+      userParams.AnimalCrossingAccount.name = search.groups.name
     } else {
       return message.reply("Peux-tu me redonner ton nom avec tes informations ?")
     }
@@ -43,7 +40,7 @@ module.exports = message => {
     // Island
     search = /ile="(?<island>[^"]+)"/.exec(message.content)
     if (search!==null && search.groups.island!==undefined) {
-      userParams.animalCrossingAccount.island = search.groups.island
+      userParams.AnimalCrossingAccount.island = search.groups.island
     } else {
       return message.reply("Je n'arrive pas à trouver ton ile...")
     }
@@ -52,7 +49,7 @@ module.exports = message => {
     search = /titre="(?<title>[^"]+)"/.exec(message.content)
     if (search!==null) {
       if(search.groups.title!==undefined) {
-        userParams.animalCrossingAccount.title = search.groups.title
+        userParams.AnimalCrossingAccount.title = search.groups.title
       } else {
         return message.reply("Ton titre n'est pas bon.")
       }
@@ -62,7 +59,7 @@ module.exports = message => {
     search = /commentaire="(?<comment>[^"]+)"/.exec(message.content)
     if (search!==null) {
       if (search.groups.comment!==undefined) {
-        userParams.animalCrossingAccount.comment = search.groups.comment
+        userParams.AnimalCrossingAccount.comment = search.groups.comment
       } else {
         return message.reply("Ton commentaire n'est pas bon.")
       }
@@ -72,7 +69,7 @@ module.exports = message => {
     search = /couleur="(?<colour>[^"]+)"/.exec(message.content)
     if (search!==null) {
       if (search.groups.colour!==undefined) {
-        userParams.animalCrossingAccount.colour = search.groups.colour
+        userParams.AnimalCrossingAccount.colour = search.groups.colour
       } else {
         return message.reply("Ta couleur n'est pas bonne.")
       }
@@ -82,7 +79,7 @@ module.exports = message => {
     search = /photo="(?<photo>[^"]+)"/.exec(message.content)
     if (search!==null) {
       if (search.groups.photo!==undefined) {
-        userParams.animalCrossingAccount.photo = search.groups.photo
+        userParams.AnimalCrossingAccount.photo = search.groups.photo
       } else {
         return message.reply("Ta photo n'est pas bonne.")
       }
@@ -92,14 +89,45 @@ module.exports = message => {
     search = /code-ami="(?<friend_code>[^"]+)"/.exec(message.content)
     if (search!==null && search.groups.friend_code!==undefined) {
       if (search.groups.friend_code!==undefined) {
-        userParams.animalCrossingAccount.friendCode = search.groups.friend_code
+        userParams.AnimalCrossingAccount.friendCode = search.groups.friend_code
       } else {
         return message.reply("Ton code ami n'est pas bonne.")
       }
     }
 
-    return User.create(userParams, {include: {model: AnimalCrossingAccount, as: 'animalCrossingAccount'}})
+    user = await User.create(userParams, {include: AnimalCrossingAccount})
   }
 
-  return message.reply(user.getPassport());
+  const replyMessage = new MessageEmbed()
+    .setTitle(user.AnimalCrossingAccount.name)
+    .setAuthor(user.username+'#'+user.discriminator, 'https://cdn.discordapp.com/avatars/'+user.id+'/'+user.avatar+'.png', 'https://discordapp.com/users/'+user.id)
+    .setTimestamp();
+
+    if (user.AnimalCrossingAccount.colour!==null) {
+      replyMessage.setColor('#8addff')
+    }
+
+    if (user.AnimalCrossingAccount.photo!==null) {
+      replyMessage.setThumbnail(user.AnimalCrossingAccount.photo)
+    } else {
+      replyMessage.setThumbnail('https://cdn.discordapp.com/avatars/'+user.id+'/'+user.avatar+'.png')
+    }
+
+    replyMessage.addField('🏝️ Île', user.AnimalCrossingAccount.island)
+
+    if (user.AnimalCrossingAccount.title!==null) {
+      replyMessage.addField('🏷️ Titre', user.AnimalCrossingAccount.title)
+    }
+    
+    if (user.AnimalCrossingAccount.friendCode!==null) {
+      // Break Line
+      replyMessage.addField('\u200B', '\u200B')
+      replyMessage.addField('👋 Code Ami', user.AnimalCrossingAccount.friendCode )
+    }
+
+    if (user.AnimalCrossingAccount.comment!==null) {
+      replyMessage.setDescription('💬 '+user.AnimalCrossingAccount.comment);
+    }
+
+  return message.reply(replyMessage);
 }
