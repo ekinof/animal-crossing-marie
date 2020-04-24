@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "postinstall": "cp .env.example .env",
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
