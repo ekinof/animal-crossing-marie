@@ -1,8 +1,8 @@
-const profile = require("../commands/profile");
+const passport = require("../commands/passport");
 
 module.exports = (client, message) => {
   // console.log(message.content)
-  if (message.content.startsWith("!profile")) {
-    return profile(message)
+  if (message.content.startsWith("!passeport")) {
+    return passport(message)
   }
 }
