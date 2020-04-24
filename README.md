@@ -2,6 +2,6 @@
 Animal Crossing Bot for Discord
 
 ToDo :
- [] Generate Passport with an image
- [] Manage data via database (PGSQL or MariaDB)
+ - [ ] Generate Passport with an image
+ - [ ] Manage data via database (PGSQL or MariaDB)
  
