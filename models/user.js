@@ -1,13 +1,20 @@
 'use strict';
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define('User', {
+  class User extends Model {
+    static associate(models) {
+      User.hasOne(models.AnimalCrossingAccount, {foreignKey: 'userId'})
+    }
+  }
+  User.init({
+    // attributes
     id: { type: DataTypes.BIGINT(11), primaryKey: true },
     username: DataTypes.STRING,
     discriminator: DataTypes.INTEGER,
     avatar: DataTypes.STRING
-  }, {});
-  User.associate = function(models) {
-    User.hasOne(models.AnimalCrossingAccount, {foreignKey: 'userId', as: 'animalCrossingAccount'})
-  }
+  }, {
+    sequelize,
+    modelName: 'User'
+  });
   return User
-};
+}

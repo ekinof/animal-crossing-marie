@@ -2,6 +2,8 @@
 Animal Crossing Bot for Discord
 
 ToDo :
- - [ ] Display a passport
- - [ ] Manage data via database (PGSQL or MariaDB)
+ - [x] Display a passport
+ - [x] Manage data via database (PGSQL or MariaDB)
+ - [ ] Add Villager DB
+ - [ ] Search if open data exists for AC
  
