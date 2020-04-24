@@ -1,23 +1,32 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Users', {
-      id: {
+    return queryInterface.createTable('AnimalCrossingAccounts', {
+      userId: {
         allowNull: false,
         autoIncrement: false,
         primaryKey: true,
         type: Sequelize.BIGINT(11)
       },
-      username: {
-        allowNull: false,
+      name: {
         type: Sequelize.STRING
       },
-      discriminator: {
-        allowNull: false,
-        type: Sequelize.INTEGER
+      island: {
+        type: Sequelize.STRING
       },
-      avatar: {
-        allowNull: false,
+      title: {
+        type: Sequelize.STRING
+      },
+      comment: {
+        type: Sequelize.STRING
+      },
+      colour: {
+        type: Sequelize.STRING
+      },
+      photo: {
+        type: Sequelize.STRING
+      },
+      friendCode: {
         type: Sequelize.STRING
       },
       createdAt: {
@@ -31,6 +40,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Users');
+    return queryInterface.dropTable('AnimalCrossingAccounts');
   }
 };

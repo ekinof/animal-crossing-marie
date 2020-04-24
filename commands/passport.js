@@ -1,13 +1,13 @@
-let User = require('./models/user')
+const {db, User, AnimalCrossingAccount} = require ('../models') 
 
 module.exports = message => {
   // check if there is an user who is mentioned
   // console.log(message.author)
   const member = message.mentions.members.first()
   if (member!==undefined) {
-    const user = User.where({id: member.id}).first()
-    if (user!==null) {
-      return message.reply("J'ai trouvé l'utilisateur : "+user.name)
+    const user = User.find(member.id)
+    if (user!==null && user.animalCrossingAccount!==null) {
+      return message.reply("J'ai trouvé l'utilisateur : "+user.username)
     } else {
       return message.reply("L'utilisateur n'a pas défini son profil.")
     }
@@ -15,19 +15,27 @@ module.exports = message => {
     // else it has to be the definition of parametters
 
     const userParams = {
-      name: null,
-      island: null,
-      title: null,
-      comment: null,
-      colour: null,
-      photo: null,
-      friendCode: null,
+      id: message.author.id,
+      username: message.author.username,
+      discriminator: message.author.discriminator,
+      avatar: message.author.avatar,
+      animalCrossingAccount : {
+        name: null,
+        island: null,
+        title: null,
+        comment: null,
+        colour: null,
+        photo: 'https://cdn.discordapp.com/avatars/'+message.author.id+'/'+message.author.avatar+'.png',
+        friendCode: null
+      }
     }
 
+    let search
+
     // Name
-    const search = /nom="(?<name>[^"]+)"/.exec(message.content)
+    search = /nom="(?<name>[^"]+)"/.exec(message.content)
     if (search!==null && search.groups.name!==undefined) {
-      name = search.groups.name
+      userParams.animalCrossingAccount.name = search.groups.name
     } else {
       return message.reply("Peux-tu me redonner ton nom avec tes informations ?")
     }
@@ -35,7 +43,7 @@ module.exports = message => {
     // Island
     search = /ile="(?<island>[^"]+)"/.exec(message.content)
     if (search!==null && search.groups.island!==undefined) {
-      island = search.groups.island
+      userParams.animalCrossingAccount.island = search.groups.island
     } else {
       return message.reply("Je n'arrive pas à trouver ton ile...")
     }
@@ -44,7 +52,7 @@ module.exports = message => {
     search = /titre="(?<title>[^"]+)"/.exec(message.content)
     if (search!==null) {
       if(search.groups.title!==undefined) {
-        title = search.groups.title
+        userParams.animalCrossingAccount.title = search.groups.title
       } else {
         return message.reply("Ton titre n'est pas bon.")
       }
@@ -54,7 +62,7 @@ module.exports = message => {
     search = /commentaire="(?<comment>[^"]+)"/.exec(message.content)
     if (search!==null) {
       if (search.groups.comment!==undefined) {
-        comment = search.groups.comment
+        userParams.animalCrossingAccount.comment = search.groups.comment
       } else {
         return message.reply("Ton commentaire n'est pas bon.")
       }
@@ -64,7 +72,7 @@ module.exports = message => {
     search = /couleur="(?<colour>[^"]+)"/.exec(message.content)
     if (search!==null) {
       if (search.groups.colour!==undefined) {
-        colour = search.groups.colour
+        userParams.animalCrossingAccount.colour = search.groups.colour
       } else {
         return message.reply("Ta couleur n'est pas bonne.")
       }
@@ -74,7 +82,7 @@ module.exports = message => {
     search = /photo="(?<photo>[^"]+)"/.exec(message.content)
     if (search!==null) {
       if (search.groups.photo!==undefined) {
-        photo = search.groups.photo
+        userParams.animalCrossingAccount.photo = search.groups.photo
       } else {
         return message.reply("Ta photo n'est pas bonne.")
       }
@@ -84,13 +92,13 @@ module.exports = message => {
     search = /code-ami="(?<friend_code>[^"]+)"/.exec(message.content)
     if (search!==null && search.groups.friend_code!==undefined) {
       if (search.groups.friend_code!==undefined) {
-        friendCode = search.groups.friend_code
+        userParams.animalCrossingAccount.friendCode = search.groups.friend_code
       } else {
         return message.reply("Ton code ami n'est pas bonne.")
       }
     }
 
-    const user = new User(userParams)
+    return User.create(userParams, {include: {model: AnimalCrossingAccount, as: 'animalCrossingAccount'}})
   }
 
   return message.reply(user.getPassport());
