@@ -2,7 +2,7 @@
 
 Animal Crossing Bot for Discord
 
-## ToDo :
+## ToDo
 
 - [x] Display a passport
 - [x] Manage data via database (PGSQL or MariaDB)
@@ -10,11 +10,11 @@ Animal Crossing Bot for Discord
 - [ ] Search if open data exists for AC
 - [ ] Complete README.md
 
-## Installation :
+## Installation
 
 Configure a MMySQL Database
 
-Configure the .env file :
+Copy and configure the .env file :
 
 ```bash
 cp .env.example .env
