@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
   VillagerDB.init({
     // attributes
     userId: { type: DataTypes.BIGINT(11), primaryKey: true },
-    url: DataTypes.STRING
+    username: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'VillagerDB',

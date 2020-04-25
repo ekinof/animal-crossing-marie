@@ -7,7 +7,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.BIGINT(11)
       },
-      url: {
+      username: {
         allowNull: false,
         type: Sequelize.STRING
       }
