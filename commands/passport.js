@@ -156,8 +156,8 @@ module.exports = async message => {
     }
 
     if (user.AnimalCrossingAccount.comment!==null) {
-      replyMessage.setDescription('💬 '+user.AnimalCrossingAccount.comment);
+      replyMessage.setDescription('💬 '+user.AnimalCrossingAccount.comment)
     }
 
-  return message.reply(replyMessage);
+  return message.reply(replyMessage)
 }
