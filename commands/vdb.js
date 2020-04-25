@@ -18,7 +18,7 @@ module.exports = async message => {
       user = User.build({
         id: message.author.id,
         VillagerDB: {
-          url: null,
+          username: null,
         }
        }, { 
         include: VillagerDB
@@ -34,17 +34,17 @@ module.exports = async message => {
     if (user.VillagerDB==undefined || user.VillagerDB==null) {
       user.VillagerDB = VillagerDB.build({
         userId: message.author.id,
-        url: null,
+        username: null,
       })
     }
 
     let search
-    // URL
-    search = /url="(?<url>[^"]+)"/.exec(message.content)
-    if (search!==null && search.groups.url!==undefined) {
-      user.VillagerDB.url = search.groups.url
+    // Username
+    search = /username="(?<url>[^"]+)"/.exec(message.content)
+    if (search!==null && search.groups.username!==undefined) {
+      user.VillagerDB.username = search.groups.username
     } else {
-      if (user.VillagerDB.url == null) {
+      if (user.VillagerDB.username == null) {
         return message.reply("Peux-tu me redonner l'URL de ton compte sur VillagerDB ?")
       }
     }
@@ -53,5 +53,5 @@ module.exports = async message => {
     user.VillagerDB.save()
   }
 
-  return message.reply('Le lien du compte de '+user.username+' : '+user.VillagerDB.url)
+  return message.reply('Le lien du compte de '+user.username+' : https://villagerdb.com/user/'+user.VillagerDB.username)
 }
