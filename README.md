@@ -12,7 +12,7 @@ Animal Crossing Bot for Discord
 
 ## Installation
 
-Configure a MMySQL Database
+Configure a MySQL Database
 
 Copy and configure the .env file :
 
