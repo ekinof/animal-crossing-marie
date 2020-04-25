@@ -40,12 +40,12 @@ module.exports = async message => {
 
     let search
     // Username
-    search = /username="(?<url>[^"]+)"/.exec(message.content)
+    search = /username="(?<username>[^"]+)"/.exec(message.content)
     if (search!==null && search.groups.username!==undefined) {
       user.VillagerDB.username = search.groups.username
     } else {
       if (user.VillagerDB.username == null) {
-        return message.reply("Peux-tu me redonner l'URL de ton compte sur VillagerDB ?")
+        return message.reply("Peux-tu me redonner ton **Nom** sur VillagerDB ?")
       }
     }
 
