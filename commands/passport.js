@@ -7,17 +7,40 @@ module.exports = async message => {
   const member = message.mentions.members.first()
   if (member!==undefined) {
     user = await User.findByPk(member.id, { include: AnimalCrossingAccount })
-    if (user==undefined || user.AnimalCrossingAccount==undefined) {
+    if (user==null || user.AnimalCrossingAccount==null) {
       return message.reply("L'utilisateur n'a pas défini son profil.")
     }
   } else {
-    // else it has to be the definition of parametters
-    const userParams = {
-      id: message.author.id,
-      username: message.author.username,
-      discriminator: message.author.discriminator,
-      avatar: message.author.avatar,
-      AnimalCrossingAccount : {
+
+    user = await User.findByPk(message.author.id, { include: AnimalCrossingAccount })
+
+    // Builde model if it doesn't exist
+    if (user == null) {
+      user = User.build({
+        id: message.author.id,
+        AnimalCrossingAccount: {
+          name: null,
+          island: null,
+          title: null,
+          comment: null,
+          colour: null,
+          photo: 'https://cdn.discordapp.com/avatars/'+message.author.id+'/'+message.author.avatar+'.png',
+          friendCode: null
+        }
+       }, { 
+        include: AnimalCrossingAccount
+      });
+    }
+
+    // Update or set user attributes
+    user.username = message.author.username
+    user.discriminator = message.author.discriminator
+    user.avatar = message.author.avatar
+
+    // If the AC Account of the user doesn't exists, we build it
+    if (user.AnimalCrossingAccount==undefined || user.AnimalCrossingAccount==null) {
+      user.AnimalCrossingAccount = AnimalCrossingAccount.build({
+        userId: message.author.id,
         name: null,
         island: null,
         title: null,
@@ -25,31 +48,35 @@ module.exports = async message => {
         colour: null,
         photo: 'https://cdn.discordapp.com/avatars/'+message.author.id+'/'+message.author.avatar+'.png',
         friendCode: null
-      }
+      })
     }
 
     let search
     // Name
     search = /nom="(?<name>[^"]+)"/.exec(message.content)
     if (search!==null && search.groups.name!==undefined) {
-      userParams.AnimalCrossingAccount.name = search.groups.name
+      user.AnimalCrossingAccount.name = search.groups.name
     } else {
-      return message.reply("Peux-tu me redonner ton nom avec tes informations ?")
+      if (user.AnimalCrossingAccount.name == null) {
+        return message.reply("Peux-tu me redonner ton nom avec tes informations ?")
+      }
     }
 
     // Island
     search = /ile="(?<island>[^"]+)"/.exec(message.content)
     if (search!==null && search.groups.island!==undefined) {
-      userParams.AnimalCrossingAccount.island = search.groups.island
+      user.AnimalCrossingAccount.island = search.groups.island
     } else {
-      return message.reply("Je n'arrive pas à trouver ton ile...")
+      if (user.AnimalCrossingAccount.name == null) {
+        return message.reply("Je n'arrive pas à trouver ton ile...")
+      }
     }
 
     // Title
     search = /titre="(?<title>[^"]+)"/.exec(message.content)
     if (search!==null) {
       if(search.groups.title!==undefined) {
-        userParams.AnimalCrossingAccount.title = search.groups.title
+        user.AnimalCrossingAccount.title = search.groups.title
       } else {
         return message.reply("Ton titre n'est pas bon.")
       }
@@ -59,17 +86,17 @@ module.exports = async message => {
     search = /commentaire="(?<comment>[^"]+)"/.exec(message.content)
     if (search!==null) {
       if (search.groups.comment!==undefined) {
-        userParams.AnimalCrossingAccount.comment = search.groups.comment
+        user.AnimalCrossingAccount.comment = search.groups.comment
       } else {
         return message.reply("Ton commentaire n'est pas bon.")
       }
     }
 
     // Colour
-    search = /couleur="(?<colour>[^"]+)"/.exec(message.content)
+    search = /couleur="(?<colour>#[a-fA-F0-9]{6})"/.exec(message.content)
     if (search!==null) {
       if (search.groups.colour!==undefined) {
-        userParams.AnimalCrossingAccount.colour = search.groups.colour
+        user.AnimalCrossingAccount.colour = search.groups.colour
       } else {
         return message.reply("Ta couleur n'est pas bonne.")
       }
@@ -79,7 +106,7 @@ module.exports = async message => {
     search = /photo="(?<photo>[^"]+)"/.exec(message.content)
     if (search!==null) {
       if (search.groups.photo!==undefined) {
-        userParams.AnimalCrossingAccount.photo = search.groups.photo
+        user.AnimalCrossingAccount.photo = search.groups.photo
       } else {
         return message.reply("Ta photo n'est pas bonne.")
       }
@@ -89,13 +116,14 @@ module.exports = async message => {
     search = /code-ami="(?<friend_code>[^"]+)"/.exec(message.content)
     if (search!==null && search.groups.friend_code!==undefined) {
       if (search.groups.friend_code!==undefined) {
-        userParams.AnimalCrossingAccount.friendCode = search.groups.friend_code
+        user.AnimalCrossingAccount.friendCode = search.groups.friend_code
       } else {
-        return message.reply("Ton code ami n'est pas bonne.")
+        return message.reply("Ton code ami n'est pas bon.")
       }
     }
 
-    user = await User.create(userParams, {include: AnimalCrossingAccount})
+    user.save()
+    user.AnimalCrossingAccount.save()
   }
 
   const replyMessage = new MessageEmbed()
@@ -104,6 +132,8 @@ module.exports = async message => {
     .setTimestamp();
 
     if (user.AnimalCrossingAccount.colour!==null) {
+      replyMessage.setColor(user.AnimalCrossingAccount.colour)
+    } else {
       replyMessage.setColor('#8addff')
     }
 
