@@ -4,6 +4,7 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       User.hasOne(models.AnimalCrossingAccount, {foreignKey: 'userId'})
+      User.hasOne(models.VillagerDB, {foreignKey: 'userId'})
     }
   }
   User.init({
