@@ -8,13 +8,15 @@ module.exports = async message => {
   if (member!==undefined) {
     user = await User.findByPk(member.id, { include: AnimalCrossingAccount })
     if (user==null || user.AnimalCrossingAccount==null) {
-      return message.reply("L'utilisateur n'a pas défini son profil.")
+      return message.reply("L'utilisateur-trice n'a pas édité son **Passeport**.")
+    } else {
+      message.reply('voici le **Passeport** de '+user.username+' :')
     }
   } else {
 
     user = await User.findByPk(message.author.id, { include: AnimalCrossingAccount })
 
-    // Builde model if it doesn't exist
+    // Build model if it doesn't exist
     if (user == null) {
       user = User.build({
         id: message.author.id,
@@ -124,6 +126,8 @@ module.exports = async message => {
 
     user.save()
     user.AnimalCrossingAccount.save()
+
+    message.reply('voici ton **Passeport** :')
   }
 
   const replyMessage = new MessageEmbed()
@@ -159,5 +163,5 @@ module.exports = async message => {
       replyMessage.setDescription('💬 '+user.AnimalCrossingAccount.comment)
     }
 
-  return message.reply(replyMessage)
+    return message.channel.send(replyMessage)
 }
