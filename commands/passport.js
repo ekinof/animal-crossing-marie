@@ -63,12 +63,12 @@ module.exports = async message => {
     }
 
     // Island
-    search = /ile="(?<island>[^"]+)"/.exec(message.content)
+    search = /[iî]le="(?<island>[^"]+)"/.exec(message.content)
     if (search!==null && search.groups.island!==undefined) {
       user.AnimalCrossingAccount.island = search.groups.island
     } else {
       if (user.AnimalCrossingAccount.name == null) {
-        return message.reply("Je n'arrive pas à trouver ton ile...")
+        return message.reply("Je n'arrive pas à trouver ton île...")
       }
     }
 
