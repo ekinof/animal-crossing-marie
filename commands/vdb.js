@@ -8,7 +8,7 @@ module.exports = async message => {
   if (member!==undefined) {
     user = await User.findByPk(member.id, { include: VillagerDB })
     if (user==null || user.VillagerDB==null) {
-      return message.reply("L'utilisateur n'a pas de lien VillagerDB de paramétré.")
+      return message.reply("l'utilisateur-trice n'a pas de lien **VillagerDB** de paramétré.")
     }
     
     return message.reply('voici le compte **VillagerDB** de '+user.username+' : https://villagerdb.com/user/'+user.VillagerDB.username)
@@ -43,12 +43,12 @@ module.exports = async message => {
 
     let search
     // Username
-    search = /username="(?<username>[^"]+)"/.exec(message.content)
+    search = /!vdb (?<username>[a-z]+)$/.exec(message.content)
     if (search!==null && search.groups.username!==undefined) {
       user.VillagerDB.username = search.groups.username
     } else {
       if (user.VillagerDB.username == null) {
-        return message.reply("Peux-tu me redonner ton **Nom** sur VillagerDB ?")
+        return message.reply('peux-tu me redonner ton **Nom** sur VillagerDB ?')
       }
     }
 
