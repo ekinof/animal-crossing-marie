@@ -2,19 +2,25 @@ const {db, User, AnimalCrossingAccount} = require ('../models')
 const { MessageEmbed } = require("discord.js")
 
 module.exports = async message => {
-  // check if there is an user who is mentioned
   let user
+  let discord_avatar = 'https://cdn.discordapp.com/avatars/'+message.author.id+'/'+message.author.avatar+'.png'
+  // Initialize a var to allow adding a message before final return
+  let preMessage
+
+  // check if there is an user who is mentioned
   const member = message.mentions.members.first()
   if (member!==undefined) {
     user = await User.findByPk(member.id, { include: AnimalCrossingAccount })
     if (user==null || user.AnimalCrossingAccount==null) {
-      return message.reply("L'utilisateur n'a pas défini son profil.")
+      return message.reply("l'utilisateur-trice n'a pas édité son **Passeport**.")
+    } else {
+      preMessage = 'voici le **Passeport** de '+username+' :'
     }
   } else {
 
     user = await User.findByPk(message.author.id, { include: AnimalCrossingAccount })
 
-    // Builde model if it doesn't exist
+    // Build model if it doesn't exist
     if (user == null) {
       user = User.build({
         id: message.author.id,
@@ -24,7 +30,7 @@ module.exports = async message => {
           title: null,
           comment: null,
           colour: null,
-          photo: 'https://cdn.discordapp.com/avatars/'+message.author.id+'/'+message.author.avatar+'.png',
+          photo: discord_avatar,
           friendCode: null
         }
        }, { 
@@ -46,7 +52,7 @@ module.exports = async message => {
         title: null,
         comment: null,
         colour: null,
-        photo: 'https://cdn.discordapp.com/avatars/'+message.author.id+'/'+message.author.avatar+'.png',
+        photo: discord_avatar,
         friendCode: null
       })
     }
@@ -58,77 +64,103 @@ module.exports = async message => {
       user.AnimalCrossingAccount.name = search.groups.name
     } else {
       if (user.AnimalCrossingAccount.name == null) {
-        return message.reply("Peux-tu me redonner ton nom avec tes informations ?")
+        return message.reply("peux-tu me redonner ton **nom** avec tes informations stp ?")
       }
     }
 
     // Island
-    search = /[iî]le="(?<island>[^"]+)"/.exec(message.content)
-    if (search!==null && search.groups.island!==undefined) {
-      user.AnimalCrossingAccount.island = search.groups.island
-    } else {
-      if (user.AnimalCrossingAccount.name == null) {
-        return message.reply("Je n'arrive pas à trouver ton île...")
+    search = /[iî]le="(?<island>[^"]{0,})"/.exec(message.content)
+    if (search!==null) {
+      if(search.groups.island!==undefined && search.groups.island!=="") {
+        user.AnimalCrossingAccount.island = search.groups.island
+      } else if (search.groups.island!==undefined && search.groups.island=="") {
+        user.AnimalCrossingAccount.island = null
+      } else {
+        return message.reply("j'ai un petit problème concernant ton **île**. Tu peux recommencer si tu veux.")
       }
     }
 
     // Title
-    search = /titre="(?<title>[^"]+)"/.exec(message.content)
+    search = /titre="(?<title>[^"]{0,})"/.exec(message.content)
     if (search!==null) {
-      if(search.groups.title!==undefined) {
+      if(search.groups.title!==undefined && search.groups.title!=="") {
         user.AnimalCrossingAccount.title = search.groups.title
+      } else if (search.groups.title!==undefined && search.groups.title=="") {
+        user.AnimalCrossingAccount.title = null
       } else {
-        return message.reply("Ton titre n'est pas bon.")
+        return message.reply("ton **titre** semble me poser quelques soucis... Regarde si tu n'as pas fait d'erreur.")
       }
     }
 
     // Comment
-    search = /commentaire="(?<comment>[^"]+)"/.exec(message.content)
+    search = /commentaire="(?<comment>[^"]{0,})"/.exec(message.content)
     if (search!==null) {
-      if (search.groups.comment!==undefined) {
+      if (search.groups.comment!==undefined && search.groups.comment!=="") {
         user.AnimalCrossingAccount.comment = search.groups.comment
+      } else if (search.groups.comment!==undefined && search.groups.comment=="") {
+        user.AnimalCrossingAccount.comment = null
       } else {
-        return message.reply("Ton commentaire n'est pas bon.")
+        return message.reply("ton **commentaire** ne peut pas être ajouté, il y a peut-être une erreur ?")
       }
     }
 
     // Colour
-    search = /couleur="(?<colour>#[a-fA-F0-9]{6})"/.exec(message.content)
+    search = /couleur="(?<colour>[^"]{0,})"/.exec(message.content)
     if (search!==null) {
-      if (search.groups.colour!==undefined) {
-        user.AnimalCrossingAccount.colour = search.groups.colour
+      if (search.groups.colour!==undefined && search.groups.colour!=="") {
+        if (/#[a-fA-F0-9]{6}/.test(search.groups.colour)) {
+          user.AnimalCrossingAccount.colour = search.groups.colour
+        } else {
+          return message.reply("ta **couleur** n'est surement pas au bon format, voici un exemple de ce qu'il faut entrer : **#f7e38c**. Si tu veux, tu peux aller sur https://www.color-hex.com/ pour trouver une jolie couleur !")
+        }
+      } else if (search.groups.colour!==undefined && search.groups.colour=="") {
+        user.AnimalCrossingAccount.colour = null
       } else {
-        return message.reply("Ta couleur n'est pas bonne.")
+        return message.reply("petit problème concernant ta **couleur**. On retente, vas-y :)")
       }
     }
 
     // Photo
-    search = /photo="(?<photo>[^"]+)"/.exec(message.content)
+    search = /photo="(?<photo>[^"]{0,})"/.exec(message.content)
     if (search!==null) {
-      if (search.groups.photo!==undefined) {
-        user.AnimalCrossingAccount.photo = search.groups.photo
+      if (search.groups.photo!==undefined && search.groups.photo!=="") {
+        if (/([https://|http://])*(?:[www.])*\w+\.\w+\D+/.test(search.groups.photo)) {
+          user.AnimalCrossingAccount.photo = search.groups.photo
+        } else {
+          return message.reply("essaie de mettre un lien valide pour ta **photo** stp, ça devrait marcher !")
+        }
+      } else if (search.groups.photo!==undefined && search.groups.photo=="") {
+        user.AnimalCrossingAccount.photo = discord_avatar
       } else {
-        return message.reply("Ta photo n'est pas bonne.")
+        return message.reply("ta **photo** n'est pas bonne. Essaie un autre lien si tu le veux bien :)")
       }
     }
 
     // Friend Code
-    search = /code-ami="(?<friend_code>[^"]+)"/.exec(message.content)
-    if (search!==null && search.groups.friend_code!==undefined) {
-      if (search.groups.friend_code!==undefined) {
-        user.AnimalCrossingAccount.friendCode = search.groups.friend_code
+    search = /code-ami="(?<friend_code>[^"]{0,})"/.exec(message.content)
+    if (search!==null) {
+      if (search.groups.friend_code!==undefined && search.groups.friend_code!=="") {
+        if (/(?:SW-)*[0-9]{4}-[0-9]{4}-[0-9]{4}/.test(search.groups.friend_code)) {
+          user.AnimalCrossingAccount.friend_code = search.groups.friend_code
+        } else {
+          return message.reply("ton **code ami** n'est pas bon, tu t'es peut-être trompé-e quelque part... Il doit ressembler à ça : **SW-0000-0000-0000**")
+        }        
+      } else if (search.groups.friend_code!==undefined && search.groups.friend_code=="") {
+        user.AnimalCrossingAccount.friend_code = null
       } else {
-        return message.reply("Ton code ami n'est pas bon.")
+        return message.reply("aïe, petit bug au niveau du **code ami**, retente stp.")
       }
     }
 
     user.save()
     user.AnimalCrossingAccount.save()
+
+    preMessage = 'voici ton **Passeport** :'
   }
 
   const replyMessage = new MessageEmbed()
     .setTitle(user.AnimalCrossingAccount.name)
-    .setAuthor(user.username+'#'+user.discriminator, 'https://cdn.discordapp.com/avatars/'+user.id+'/'+user.avatar+'.png', 'https://discordapp.com/users/'+user.id)
+    .setAuthor(user.username+'#'+user.discriminator, discord_avatar, 'https://discordapp.com/users/'+user.id)
     .setTimestamp();
 
     if (user.AnimalCrossingAccount.colour!==null) {
@@ -143,7 +175,11 @@ module.exports = async message => {
       replyMessage.setThumbnail('https://cdn.discordapp.com/avatars/'+user.id+'/'+user.avatar+'.png')
     }
 
-    replyMessage.addField('🏝️ Île', user.AnimalCrossingAccount.island)
+    if (user.AnimalCrossingAccount.island!==null) {
+      replyMessage.addField('🏝️ Île', user.AnimalCrossingAccount.island)
+    } else {
+      replyMessage.addField('🏝️ Île', 'Inconnue...')
+    }
 
     if (user.AnimalCrossingAccount.title!==null) {
       replyMessage.addField('🏷️ Titre', user.AnimalCrossingAccount.title)
@@ -159,5 +195,9 @@ module.exports = async message => {
       replyMessage.setDescription('💬 '+user.AnimalCrossingAccount.comment)
     }
 
-  return message.reply(replyMessage)
+    if (preMessage) {
+      message.reply(preMessage)
+    }
+    
+    return message.channel.send(replyMessage)
 }
