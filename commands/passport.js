@@ -4,13 +4,8 @@ const { MessageEmbed } = require("discord.js")
 module.exports = async message => {
   let user
   let discord_avatar = 'https://cdn.discordapp.com/avatars/'+message.author.id+'/'+message.author.avatar+'.png'
-  let replies = function (username) {
-    if (!username) {
-      return 'voici ton **Passeport** :'
-    } else {
-      return 'voici le **Passeport** de '+username+' :'
-    }
-  }
+  // Initialize a var to allow adding a message before final return
+  let preMessage
 
   // check if there is an user who is mentioned
   const member = message.mentions.members.first()
@@ -19,7 +14,7 @@ module.exports = async message => {
     if (user==null || user.AnimalCrossingAccount==null) {
       return message.reply("l'utilisateur-trice n'a pas édité son **Passeport**.")
     } else {
-      message.reply(replies(user.username))
+      preMessage = 'voici le **Passeport** de '+username+' :'
     }
   } else {
 
@@ -63,7 +58,6 @@ module.exports = async message => {
     }
 
     let search
-    let regex
     // Name
     search = /nom="(?<name>[^"]+)"/.exec(message.content)
     if (search!==null && search.groups.name!==undefined) {
@@ -112,10 +106,9 @@ module.exports = async message => {
 
     // Colour
     search = /couleur="(?<colour>[^"]{0,})"/.exec(message.content)
-    regex = /#[a-fA-F0-9]{6}/
     if (search!==null) {
       if (search.groups.colour!==undefined && search.groups.colour!=="") {
-        if (regex.test(search.groups.colour)) {
+        if (/#[a-fA-F0-9]{6}/.test(search.groups.colour)) {
           user.AnimalCrossingAccount.colour = search.groups.colour
         } else {
           return message.reply("ta **couleur** n'est surement pas au bon format, voici un exemple de ce qu'il faut entrer : **#f7e38c**. Si tu veux, tu peux aller sur https://www.color-hex.com/ pour trouver une jolie couleur !")
@@ -129,10 +122,9 @@ module.exports = async message => {
 
     // Photo
     search = /photo="(?<photo>[^"]{0,})"/.exec(message.content)
-    regex= /([https://|http://])*([www.])*\w+\.\w+\D+/
     if (search!==null) {
       if (search.groups.photo!==undefined && search.groups.photo!=="") {
-        if (regex.test(search.groups.photo)) {
+        if (/([https://|http://])*(?:[www.])*\w+\.\w+\D+/.test(search.groups.photo)) {
           user.AnimalCrossingAccount.photo = search.groups.photo
         } else {
           return message.reply("essaie de mettre un lien valide pour ta **photo** stp, ça devrait marcher !")
@@ -146,10 +138,9 @@ module.exports = async message => {
 
     // Friend Code
     search = /code-ami="(?<friend_code>[^"]{0,})"/.exec(message.content)
-    regex = /(SW-)*[0-9]{4}-[0-9]{4}-[0-9]{4}/
     if (search!==null) {
       if (search.groups.friend_code!==undefined && search.groups.friend_code!=="") {
-        if (regex.test(search.groups.friend_code)) {
+        if (/(?:SW-)*[0-9]{4}-[0-9]{4}-[0-9]{4}/.test(search.groups.friend_code)) {
           user.AnimalCrossingAccount.friend_code = search.groups.friend_code
         } else {
           return message.reply("ton **code ami** n'est pas bon, tu t'es peut-être trompé-e quelque part... Il doit ressembler à ça : **SW-0000-0000-0000**")
@@ -164,7 +155,7 @@ module.exports = async message => {
     user.save()
     user.AnimalCrossingAccount.save()
 
-    message.reply(replies())
+    preMessage = 'voici ton **Passeport** :'
   }
 
   const replyMessage = new MessageEmbed()
@@ -204,5 +195,9 @@ module.exports = async message => {
       replyMessage.setDescription('💬 '+user.AnimalCrossingAccount.comment)
     }
 
+    if (preMessage) {
+      message.reply(preMessage)
+    }
+    
     return message.channel.send(replyMessage)
 }
