@@ -20,8 +20,11 @@ module.exports = async message => {
     // if no user mentionned that is we are editing one
 
     // we check the channel is made for editing values with BOT
-    if (!process.env.DISCORD_SERVER_CHANNELS.includes(message.channel.id)) {
-      return message.reply("tu ne peux éditer ton profil que dans l'un de ces salons : <#"+process.env.DISCORD_SERVER_CHANNELS.join("> <#")+">")
+    let is_edit = /[a-z]{1,}="([^"]{0,})"/.exec(message.content)
+    let allowed_channel_id = process.env.DISCORD_SERVER_CHANNELS.match(/([0-9]{18}){1,}/g)
+    
+    if (!allowed_channel_id.includes(message.channel.id) && is_edit!==null) {
+      return message.reply("tu ne peux éditer ton profil que dans l'un de ces salons : <#"+allowed_channel_id.join("> <#")+">")
     }
 
     user = await User.findByPk(message.author.id, { include: AnimalCrossingAccount })
@@ -201,14 +204,9 @@ module.exports = async message => {
       replyMessage.setDescription('💬 '+user.AnimalCrossingAccount.comment)
     }
 
-    search = /[a-z]{1,}="([^"]{0,})"/.exec(message.content)
-    if (search !==null) {
-      return message.reply('tu ne peux éditer ton profil que dans le salon <#'+channel_id+'>')
-    } else {
-      if (preMessage) {
-        message.reply(preMessage)
-      }
-      
-      return message.channel.send(replyMessage)
+    if (preMessage) {
+      message.reply(preMessage)
     }
+    
+    return message.channel.send(replyMessage)
 }
