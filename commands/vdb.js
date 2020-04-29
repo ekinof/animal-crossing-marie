@@ -2,9 +2,6 @@ const {db, User, VillagerDB} = require ('../models')
 const { MessageEmbed } = require("discord.js")
 
 module.exports = async message => {
-  // Allowed channel ID
-  let channel_id = '705041769791881252'
-
   // check if there is an user who is mentioned
   let user
   const member = message.mentions.members.first()
@@ -59,9 +56,9 @@ module.exports = async message => {
     user.VillagerDB.save()
 
     search = /!vdb ([a-z]+)/.exec(message.content)
-    if (search !==null && message.channel.id !== channel_id) { // if edit profil in non allowed channel
+    if (search !==null) {
       return message.reply('tu ne peux éditer ton profil que dans le salon <#'+channel_id+'>')
-    } else { // else
+    } else {
       return message.reply('voici ton compte **VillagerDB** : https://villagerdb.com/user/'+user.VillagerDB.username)
     }
   }
