@@ -4,6 +4,8 @@ const { MessageEmbed } = require("discord.js")
 module.exports = async message => {
   let user
   let discord_avatar = 'https://cdn.discordapp.com/avatars/'+message.author.id+'/'+message.author.avatar+'.png'
+  // Allowed channel ID
+  let channel_id = '705041769791881252'
   // Initialize a var to allow adding a message before final return
   let preMessage
 
@@ -14,7 +16,7 @@ module.exports = async message => {
     if (user==null || user.AnimalCrossingAccount==null) {
       return message.reply("l'utilisateur-trice n'a pas édité son **Passeport**.")
     } else {
-      preMessage = 'voici le **Passeport** de '+username+' :'
+      preMessage = 'voici le **Passeport** de '+user.username+' :'
     }
   } else {
 
@@ -195,9 +197,14 @@ module.exports = async message => {
       replyMessage.setDescription('💬 '+user.AnimalCrossingAccount.comment)
     }
 
-    if (preMessage) {
-      message.reply(preMessage)
+    search = /[a-z]{1,}="([^"]{0,})"/.exec(message.content)
+    if (search !==null && message.channel.id !== channel_id) { // if edit profil in non allowed channel
+      return message.reply('tu ne peux éditer ton profil que dans le salon <#'+channel_id+'>')
+    } else { // else
+      if (preMessage) {
+        message.reply(preMessage)
+      }
+      
+      return message.channel.send(replyMessage)
     }
-    
-    return message.channel.send(replyMessage)
 }
