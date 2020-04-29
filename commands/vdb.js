@@ -13,6 +13,13 @@ module.exports = async message => {
     
     return message.reply('voici le compte **VillagerDB** de '+user.username+' : https://villagerdb.com/user/'+user.VillagerDB.username)
   } else {
+    // if no user mentionned that is we are editing one
+
+    // we check the channel is made for editing values with BOT
+    if (!process.env.DISCORD_SERVER_CHANNELS.includes(message.channel.id)) {
+      return message.reply("tu ne peux éditer ton profil que dans l'un de ces salons : <#"+process.env.DISCORD_SERVER_CHANNELS.join("> <#")+">")
+    }
+
     user = await User.findByPk(message.author.id, { include: VillagerDB })
 
     // Build model if it doesn't exist

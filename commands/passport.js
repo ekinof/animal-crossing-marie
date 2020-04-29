@@ -17,6 +17,12 @@ module.exports = async message => {
       preMessage = 'voici le **Passeport** de '+user.username+' :'
     }
   } else {
+    // if no user mentionned that is we are editing one
+
+    // we check the channel is made for editing values with BOT
+    if (!process.env.DISCORD_SERVER_CHANNELS.includes(message.channel.id)) {
+      return message.reply("tu ne peux éditer ton profil que dans l'un de ces salons : <#"+process.env.DISCORD_SERVER_CHANNELS.join("> <#")+">")
+    }
 
     user = await User.findByPk(message.author.id, { include: AnimalCrossingAccount })
 
