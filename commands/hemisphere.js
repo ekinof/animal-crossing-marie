@@ -9,30 +9,30 @@ module.exports = async message => {
   const member = message.mentions.members.first()
   if (member!==undefined) {
     user = await User.findByPk(member.id, { include: AnimalCrossingAccount })
-    if (user==null || user.AnimalCrossingAccount==null || user.AnimalCrossingAccount.hemishere==null) {
+    if (user==null || user.AnimalCrossingAccount==null || user.AnimalCrossingAccount.hemisphere==null) {
       return message.reply("l'utilisateur-trice n'a pas défini l'hémisphère le/laquelle iel habite")
     } else {
-      if (user.AnimalCrossingAccount.hemishere == 'n') {
-        return message.reply(user.username+" se trouve dans l'hémisphère Nord.")
+      if (user.AnimalCrossingAccount.hemisphere == 'n') {
+        return message.reply(user.username+" se trouve dans **l'hémisphère Nord**.")
       } else {
-        return message.reply(user.username+" se trouve dans l'hémisphère Sud.")
+        return message.reply(user.username+" se trouve dans **l'hémisphère Sud**.")
       }
     }
   } else {
     // if no user mentionned that is we are editing one
 
     // we check the channel is made for editing values with BOT
-    let is_edit = /!hemisphere *[^ ]{0,}/i.exec(message.content)
+    let is_edit = /!hemisphere ([a-zA-Z]{1,})/.exec(message.content)
     let allowed_channel_id = JSON.parse(process.env.DISCORD_SERVER_CHANNELS)
     
     user = await User.findByPk(message.author.id, { include: AnimalCrossingAccount })
 
     if (is_edit===null) {
-      if (user!==null && user.AnimalCrossingAccount!==null && user.AnimalCrossingAccount.hemishere!==null) {
-        if (user.AnimalCrossingAccount.hemishere== 'n') {
-          return message.reply("tu es dans l'hémisphère Nord.")
+      if (user!==null && user.AnimalCrossingAccount!==null && user.AnimalCrossingAccount.hemisphere!==null) {
+        if (user.AnimalCrossingAccount.hemisphere== 'n') {
+          return message.reply("tu es dans **l'hémisphère Nord**.")
         } else {
-          return message.reply("tu es dans l'hémisphère Sud.")
+          return message.reply("tu es dans **l'hémisphère Sud**.")
         }
       } else {
         return message.reply("tu n'as paramétré ton hémisphère.")
@@ -85,15 +85,16 @@ module.exports = async message => {
     let textMessage
     let search
     // Hemisphere
-    search = /!hemisphere *(?<hemisphere>)/i.exec(message.content).exec(message.content)
+    search = /!hemisphere (?<hemisphere>[a-zA-Z]{1,})$/.exec(message.content)
     if (search!==null && search.groups.hemisphere!==undefined) {
       let lowercaseHemisphere = search.groups.hemisphere.toLowerCase()
+      
       if (['north', 'nord', 'n'].includes(lowercaseHemisphere)) {
         user.AnimalCrossingAccount.hemisphere = 'n'
-        textMessage = "Tu es dans l'hémisphère Nord."
+        textMessage = "merci ! Tu es donc dans **l'hémisphère Nord**."
       } else  {
         user.AnimalCrossingAccount.hemisphere = 's'
-        textMessage = "Tu es dans l'hémisphère Sud."
+        textMessage = "merci ! Tu es donc dans **l'hémisphère Sud.**"
       }
     } else {
       if (user.AnimalCrossingAccount.name == null) {

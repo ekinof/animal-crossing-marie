@@ -6,7 +6,7 @@ module.exports = (client, message) => {
   // console.log(message.content)
   if (message.content.startsWith("!hemisphere")) {
     if (message.mentions.has(client.user)) { // If the bot is mentionned
-      message.reply("")
+      message.reply("je n'ai pas d'hémisphère assigné, j'aime alléer où on a besoin de moi :relaxed:")
     } else {
       hemisphere(message)
     }
