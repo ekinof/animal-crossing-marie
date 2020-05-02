@@ -11,8 +11,8 @@ module.exports = async message => {
   const member = message.mentions.members.first()
   if (member!==undefined) {
     user = await User.findByPk(member.id, { include: AnimalCrossingAccount })
-    if (user==null || user.AnimalCrossingAccount==null) {
-      return message.reply("l'utilisateur-trice n'a pas édité son **Passeport**.")
+    if (user==null || user.AnimalCrossingAccount==null || user.AnimalCrossingAccount.username || user.AnimalCrossingAccount.island) {
+      return message.reply("l'utilisateur-trice n'a pas encore reçu son **Passeport**.")
     } else {
       preMessage = 'voici le **Passeport** de '+user.username+' :'
     }
