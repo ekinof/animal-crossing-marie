@@ -14,9 +14,18 @@ module.exports = async message => {
     if (user==null || user.AnimalCrossingAccount==null) {
       return message.reply("l'utilisateur-trice n'a pas édité son **Passeport**.")
     } else {
-      preMessage = 'voici le **Passeport** de '+username+' :'
+      preMessage = 'voici le **Passeport** de '+user.username+' :'
     }
   } else {
+    // if no user mentionned that is we are editing one
+
+    // we check the channel is made for editing values with BOT
+    let is_edit = /[a-z]{1,}="([^"]{0,})"/.exec(message.content)
+    let allowed_channel_id = JSON.parse(process.env.DISCORD_SERVER_CHANNELS)    
+    
+    if (!allowed_channel_id.includes(message.channel.id) && is_edit!==null) {
+      return message.reply("tu ne peux éditer ton profil que dans l'un de ces salons : <#"+allowed_channel_id.join("> <#")+">")
+    }
 
     user = await User.findByPk(message.author.id, { include: AnimalCrossingAccount })
 
