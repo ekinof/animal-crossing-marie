@@ -20,7 +20,7 @@ module.exports = async message => {
     // if no user mentionned that is we are editing one
 
     // we check the channel is made for editing values with BOT
-    let is_edit = /[a-z]{1,}="([^"]{0,})"/.exec(message.content)
+    let is_edit = /[a-z\-]{1,}="([^"]{0,})"/.exec(message.content)
     let allowed_channel_id = JSON.parse(process.env.DISCORD_SERVER_CHANNELS)    
     
     if (!allowed_channel_id.includes(message.channel.id) && is_edit!==null) {
