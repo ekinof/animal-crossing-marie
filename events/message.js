@@ -3,7 +3,7 @@ const passport = require("../commands/passport");
 const vdb = require("../commands/vdb");
 
 module.exports = (client, message) => {
-  // console.log(message.content)
+  console.log(message.content)
   if (message.content.startsWith("!hemisphere")) {
     if (message.mentions.has(client.user)) { // If the bot is mentionned
       message.reply("je n'ai pas d'hémisphère assigné, j'aime alléer où on a besoin de moi :relaxed:")
