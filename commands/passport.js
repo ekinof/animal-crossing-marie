@@ -197,7 +197,7 @@ module.exports = async message => {
     if (user.AnimalCrossingAccount.friendCode!==null) {
       // Break Line
       replyMessage.addField('\u200B', '\u200B')
-      replyMessage.addField('👋 Code Ami', user.AnimalCrossingAccount.friendCode )
+      replyMessage.addField('👋 Code Ami', user.AnimalCrossingAccount.friend_code )
     }
 
     if (user.AnimalCrossingAccount.comment!==null) {
