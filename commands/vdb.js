@@ -52,7 +52,7 @@ module.exports = async message => {
 
     let search
     // Username
-    search = /!vdb (?<username>[a-z]+)$/.exec(message.content)
+    search = /!vdb (?<username>[a-z]+)$/i.exec(message.content)
     if (search!==null && search.groups.username!==undefined) {
       user.VillagerDB.username = search.groups.username
     } else {
