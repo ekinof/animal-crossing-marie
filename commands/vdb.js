@@ -1,5 +1,4 @@
-const {db, User, VillagerDB} = require ('../models') 
-const { MessageEmbed } = require("discord.js")
+const {db, User, VillagerDB} = require ('../models')
 
 module.exports = async message => {
   // check if there is an user who is mentioned

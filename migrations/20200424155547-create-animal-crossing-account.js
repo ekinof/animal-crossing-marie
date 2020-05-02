@@ -14,6 +14,9 @@ module.exports = {
       island: {
         type: Sequelize.STRING
       },
+      hemisphere: {
+        type: Sequelize.STRING
+      },
       title: {
         type: Sequelize.STRING
       },
