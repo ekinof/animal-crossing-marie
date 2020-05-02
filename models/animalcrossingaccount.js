@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     userId: { type: DataTypes.BIGINT(11), primaryKey: true },
     name: DataTypes.STRING,
     island: DataTypes.STRING,
+    hemisphere: DataTypes.STRING,
     title: DataTypes.STRING,
     comment: DataTypes.STRING,
     colour: DataTypes.STRING,
