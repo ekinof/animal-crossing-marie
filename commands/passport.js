@@ -146,10 +146,10 @@ module.exports = async message => {
     }
 
     // Friend Code
-    search = /code-ami="(?<friend_code>[^"]{0,})"/.exec(message.content)
+    search = /code\-ami="(?<friend_code>[^"]{0,})"/.exec(message.content)
     if (search!==null) {
       if (search.groups.friend_code!==undefined && search.groups.friend_code!=="") {
-        if (/(?:SW-)*[0-9]{4}-[0-9]{4}-[0-9]{4}/.test(search.groups.friend_code)) {
+        if (/(?:SW\-)*[0-9]{4}\-[0-9]{4}\-[0-9]{4}/.test(search.groups.friend_code)) {
           user.AnimalCrossingAccount.friend_code = search.groups.friend_code
         } else {
           return message.reply("ton **code ami** n'est pas bon, tu t'es peut-être trompé-e quelque part... Il doit ressembler à ça : **SW-0000-0000-0000**")
