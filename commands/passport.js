@@ -150,12 +150,12 @@ module.exports = async message => {
     if (search!==null) {
       if (search.groups.friend_code!==undefined && search.groups.friend_code!=="") {
         if (/(?:SW\-)*[0-9]{4}\-[0-9]{4}\-[0-9]{4}/.test(search.groups.friend_code)) {
-          user.AnimalCrossingAccount.friend_code = search.groups.friend_code
+          user.AnimalCrossingAccount.friendCode = search.groups.friend_code
         } else {
           return message.reply("ton **code ami** n'est pas bon, tu t'es peut-être trompé-e quelque part... Il doit ressembler à ça : **SW-0000-0000-0000**")
         }        
       } else if (search.groups.friend_code!==undefined && search.groups.friend_code=="") {
-        user.AnimalCrossingAccount.friend_code = null
+        user.AnimalCrossingAccount.friendCode = null
       } else {
         return message.reply("aïe, petit bug au niveau du **code ami**, retente stp.")
       }
@@ -197,7 +197,7 @@ module.exports = async message => {
     if (user.AnimalCrossingAccount.friendCode!==null) {
       // Break Line
       replyMessage.addField('\u200B', '\u200B')
-      replyMessage.addField('👋 Code Ami', user.AnimalCrossingAccount.friend_code )
+      replyMessage.addField('👋 Code Ami', user.AnimalCrossingAccount.friendCode )
     }
 
     if (user.AnimalCrossingAccount.comment!==null) {
