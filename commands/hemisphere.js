@@ -22,7 +22,7 @@ module.exports = async message => {
     // if no user mentionned that is we are editing one
 
     // we check the channel is made for editing values with BOT
-    let is_edit = /!hemisphere ([a-zA-Z]{1,})/.exec(message.content)
+    let is_edit = /!hemisphere ([a-zA-Z]{0,})/.exec(message.content)
     let allowed_channel_id = JSON.parse(process.env.DISCORD_SERVER_CHANNELS)
     
     user = await User.findByPk(message.author.id, { include: AnimalCrossingAccount })
@@ -99,6 +99,8 @@ module.exports = async message => {
     } else {
       if (user.AnimalCrossingAccount.name == null) {
         return message.reply("peux-tu me redonner ton **hemisphere** avec tes informations stp ?")
+      } else if (user.AnimalCrossingAccount.name!==null && search == null) {
+        return message.reply("je n'ai pas compris ton **hémisphère**. Tu dois mettre `n` ou `nord` pour le Nord et `s` ou `sud` pour le Sud.")
       }
     }
 
