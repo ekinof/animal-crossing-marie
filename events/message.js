@@ -6,7 +6,7 @@ module.exports = (client, message) => {
   console.log(message.content)
   if (message.content.startsWith("!hemisphere")) {
     if (message.mentions.has(client.user)) { // If the bot is mentionned
-      message.reply("je n'ai pas d'hémisphère assigné, j'aime alléer où on a besoin de moi :relaxed:")
+      message.reply("je n'ai pas d'hémisphère assigné, j'aime aller où on a besoin de moi :relaxed:")
     } else {
       hemisphere(message)
     }
@@ -22,7 +22,7 @@ module.exports = (client, message) => {
   }
   if (message.content.startsWith("!vdb")) {
     if (message.mentions.has(client.user)) { // If the bot is mentionned
-      message.reply("c'est gentil de penser à moi mais j'ai tout ce qu'il me faut déjà :relaxed:")
+      message.reply("c'est gentil de penser à moi mais j'ai déjà tout ce qu'il me faut :relaxed:")
     } else {
       vdb(message)
     }
