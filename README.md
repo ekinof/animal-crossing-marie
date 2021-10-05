@@ -23,5 +23,5 @@ cp .env.example .env
 Migrate the database
 
 ```bash
-yarn sequelize-cli db:migrate
+npx sequelize-cli db:migrate
 ```
